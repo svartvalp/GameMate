@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
-public class BaseStringFieldMatcher implements StringFieldMatcher {
+public class BaseStringFieldMatcher implements StringFieldChecker {
     @Override
     public List<ValidationError> checkIsEmpty(String subject, String fieldName) {
         if(subject == null || subject.isBlank()) {

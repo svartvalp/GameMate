@@ -3,7 +3,7 @@ package com.svartvalp.GameMate.Validation;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BaseStringFieldMatcherTest {
+public class BaseStringFieldCheckerTest {
 
     @Test
     public void checkIsEmptyTest() {
