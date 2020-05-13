@@ -23,6 +23,6 @@ public class ValidationException extends RuntimeException {
     @Override
     public String getMessage() {
         return super.getMessage() + " Errors: " +
-                errors.stream().map(ValidationError::getMessage).collect(Collectors.joining(";"));
+                errors.stream().map(ValidationError::getMessage).collect(Collectors.joining("; "));
     }
 }

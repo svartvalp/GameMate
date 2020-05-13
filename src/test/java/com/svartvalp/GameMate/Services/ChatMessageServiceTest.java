@@ -4,17 +4,19 @@ import com.svartvalp.GameMate.AppConfig;
 import com.svartvalp.GameMate.Controllers.ChatMessageController;
 import com.svartvalp.GameMate.Models.ChatMessage;
 import com.svartvalp.GameMate.Repositories.ChatMessageRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ChatMessageServiceTest {
     @MockBean
     ChatMessageRepository chatMessageRepository;

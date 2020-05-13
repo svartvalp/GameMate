@@ -3,10 +3,12 @@ package com.svartvalp.GameMate.Validation;
 import com.svartvalp.GameMate.Exceptions.ValidationException;
 import com.svartvalp.GameMate.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.LinkedList;
 import java.util.List;
 
-
+@Component
 public class UserValidator implements Validator<User> {
     private StringFieldChecker baseStringFieldChecker;
 

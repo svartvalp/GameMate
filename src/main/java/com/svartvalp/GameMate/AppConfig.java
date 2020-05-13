@@ -22,6 +22,11 @@ import java.util.List;
 @ComponentScan(basePackages = {"com.svartvalp.GameMate"})
 public class AppConfig extends AbstractReactiveMongoConfiguration {
 
+    @Override
+    protected boolean autoIndexCreation() {
+        return true;
+    }
+
     @Value("${mongo.client.connection_uri}")
     private String connectionURI;
 

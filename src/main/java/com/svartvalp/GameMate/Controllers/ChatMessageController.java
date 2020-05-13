@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @RequestMapping(value = "/chat/messages")
@@ -27,4 +28,10 @@ public class ChatMessageController {
         return chatMessageService.findLastMessagesByChatId(chatId, size, pageNunber);
     }
 
+    @PostMapping(value = "/{chatId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ChatMessage> createMessage(@RequestBody ChatMessage message, @PathVariable("chatId") String chatId) {
+        message.setChatId(chatId);
+        return chatMessageService.createMessage(message);
+    }
+    
 }
