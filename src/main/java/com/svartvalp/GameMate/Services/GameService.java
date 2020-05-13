@@ -28,7 +28,7 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public Flux<Game> findGameLike(String name) {
+    public Flux<Game> findGamesLike(String name) {
         return gameRepository.findByNameLike(name);
     }
 

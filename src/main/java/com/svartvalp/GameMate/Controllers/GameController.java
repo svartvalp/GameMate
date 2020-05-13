@@ -29,4 +29,9 @@ public class GameController {
     public Mono<Game> createGame(@RequestBody Game game) {
         return gameService.createGame(game);
     }
+
+    @GetMapping(value = "/search")
+    public Flux<Game> getGamesLike(@RequestParam("query") String query) {
+        return gameService.findGamesLike(query);
+    }
 }
