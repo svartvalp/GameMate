@@ -7,6 +7,7 @@ import com.svartvalp.GameMate.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,7 +22,11 @@ public class ChatService implements IChatService{
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
 
-
+    @Scheduled(fixedRateString = "${scheduling.fixedRate.in.milliseconds}")
+    public void doScheduled() {
+        chatRepository.deleteAll(chatRepository.findAll().filter(chat -> !checkChatLifeTime(chat))
+                .toIterable()).block();
+    }
 
 
     @Autowired

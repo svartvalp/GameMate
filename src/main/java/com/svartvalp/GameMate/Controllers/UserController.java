@@ -40,12 +40,16 @@ public class UserController {
     }
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<User> createUser(@RequestBody User user) {
+    public Mono<Map<String,String>> createUser(@RequestBody User user) {
         userValidator.validate(user, List.of("email", "password", "nickname"));
-        return userService.createUser(user);
+        return userService.createUser(user).map(createdUser -> {
+            Map<String, String> body = new HashMap<>();
+            body.put( "token",jwtUtils.createToken(user.getNickname()));
+            return body;
+        });
     }
 
-    @PutMapping(value = "")
+    @PutMapping(value = "/password")
     public void updatePassword(@RequestBody UpdatePasswordMessage message) {
         userService.updatePassword(message.getEmail(), message.getOldPassword(), message.getNewPassword());
     }

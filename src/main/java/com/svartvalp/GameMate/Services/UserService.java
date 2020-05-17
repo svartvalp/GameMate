@@ -80,7 +80,13 @@ public class UserService implements IUserService {
 
     @Override
     public Mono<Void> deleteUser(User user) {
-       return userRepository.delete(user);
+        return userRepository.findByNickname(user.getNickname()).flatMap(foundUser -> {
+            if(foundUser.getEmail().equals(user.getEmail()) &&
+                    encoder.matches(user.getPassword(), foundUser.getPassword())) {
+                return userRepository.delete(foundUser);
+            }
+            return Mono.error(new AuthenticationException());
+        });
     }
 
     @Override

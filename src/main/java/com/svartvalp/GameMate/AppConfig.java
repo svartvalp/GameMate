@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebFlux
+@EnableScheduling
 @EnableReactiveMongoRepositories
 @ComponentScan(basePackages = {"com.svartvalp.GameMate"})
 public class AppConfig extends AbstractReactiveMongoConfiguration {

@@ -17,7 +17,7 @@ public class JWTUtils {
     @Value("${jwt.secretKey}")
     private String secret;
 
-    @Value("${jwt.expirationTime}")
+    @Value("${jwt.expirationTime.in.seconds}")
     private long expirationTime;
 
     public String createToken(String nickname) {
