@@ -1,7 +1,6 @@
 package com.svartvalp.GameMate.Controllers;
 
 import com.svartvalp.GameMate.Models.Game;
-import com.svartvalp.GameMate.Services.GameService;
 import com.svartvalp.GameMate.Services.IGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,7 +12,7 @@ import reactor.core.publisher.Mono;
 @RestController
 public class GameController {
 
-    IGameService gameService;
+    final IGameService gameService;
 
     @Autowired
     public GameController(IGameService gameService) {

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class GameService implements IGameService {
 
-    GameRepository gameRepository;
+    private final GameRepository gameRepository;
 
     @Autowired
     public GameService(GameRepository gameRepository) {

@@ -1,25 +1,29 @@
 package com.svartvalp.GameMate.Controllers;
 
 import com.svartvalp.GameMate.Models.Chat;
-import com.svartvalp.GameMate.Services.ChatService;
 import com.svartvalp.GameMate.Services.IChatService;
+import com.svartvalp.GameMate.Validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 
 
 @RequestMapping(value = "/chat")
 @RestController
 public class ChatController {
 
-    IChatService chatService;
+    final Validator<Chat> chatValidator;
+    final IChatService chatService;
 
     @Autowired
-    public ChatController(IChatService chatService) {
+    public ChatController(Validator<Chat> chatValidator, IChatService chatService) {
+        this.chatValidator = chatValidator;
         this.chatService = chatService;
     }
 
@@ -31,7 +35,9 @@ public class ChatController {
     }
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Chat> createChat(@RequestBody Chat chat) {
+    public Mono<Chat> createChat(@RequestBody Chat chat, Principal principal) {
+        chatValidator.validate(chat, List.of("title", "timeToLive"));
+        chat.setOwnerNickname(principal.getName());
         return chatService.createChat(chat);
     }
 
@@ -39,6 +45,12 @@ public class ChatController {
     public Flux<Chat> getLastChats(@RequestParam("page") int page, @RequestParam("size") int size) {
         return chatService.getLastChats(page, size);
     }
+
+    @DeleteMapping(value = "/{chatId}")
+    public Mono<Void> deleteChat(Principal principal, @PathVariable("chatId") String chatId) {
+        return chatService.deleteChat(chatId, principal.getName());
+    }
+
     @GetMapping("/all")
     public Flux<Chat> getAllChats() {
         return chatService.getAllChats();

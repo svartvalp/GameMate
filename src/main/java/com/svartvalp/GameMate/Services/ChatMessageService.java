@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class ChatMessageService implements IChatMessageService {
 
-    private ChatMessageRepository chatMessageRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Autowired
     public ChatMessageService(ChatMessageRepository chatMessageRepository) {

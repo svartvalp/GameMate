@@ -5,8 +5,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface IGameService {
-    public Mono<Game> createGame(Game game);
-    public Mono<Void> deleteGame(Game game);
-    public Flux<Game> findGamesLike(String name);
-    public Flux<Game>  findAllGames();
+    Mono<Game> createGame(Game game);
+    Mono<Void> deleteGame(Game game);
+    Flux<Game> findGamesLike(String name);
+    Flux<Game>  findAllGames();
 }

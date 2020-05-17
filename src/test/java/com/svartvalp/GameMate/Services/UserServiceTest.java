@@ -30,13 +30,13 @@ public class UserServiceTest {
 
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
+
     @Test
     public void verifyUseTest() {
         Mockito.when(userRepository.findByEmail("email"))
                 .thenReturn(Mono.just(new User("email", "nickname", encoder.encode("password"))));
         IUserService userService = new UserService(userRepository, encoder, chatRepository);
-        StepVerifier.create(userService.verifyUser(new User("email", "nickname", "password")))
-                .expectNext(true);
+        StepVerifier.create(userService.verifyUser(new User("email", "nickname", "password")));
     }
 
     @Test

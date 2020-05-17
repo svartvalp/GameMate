@@ -1,5 +1,6 @@
 package com.svartvalp.GameMate.Services;
 
+import com.svartvalp.GameMate.Exceptions.AuthenticationException;
 import com.svartvalp.GameMate.Models.Chat;
 import com.svartvalp.GameMate.Repositories.ChatRepository;
 import com.svartvalp.GameMate.Repositories.UserRepository;
@@ -10,15 +11,18 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.naming.AuthenticationException;
+
 import java.time.Instant;
 import java.util.List;
 
 @Component
 public class ChatService implements IChatService{
 
-    ChatRepository chatRepository;
-    UserRepository userRepository;
+    private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
+
+
+
 
     @Autowired
     public ChatService(ChatRepository chatRepository, UserRepository userRepository) {
@@ -35,25 +39,30 @@ public class ChatService implements IChatService{
 
     @Override
     public Mono<Chat> createChat(Chat chat) {
+        chat.setCreationTime(Instant.now().toEpochMilli());
         return chatRepository.insert(chat);
     }
 
     @Override
     public Mono<Void> deleteChat(String chatId, String ownerNickname) {
         return chatRepository.findById(chatId)
-                .flatMap(chat -> chat.getOwnerNickname() == ownerNickname ? chatRepository.delete(chat)
-                        : Mono.error(new AuthenticationException("Chat can delete only owner")));
+                .flatMap(chat -> chat.getOwnerNickname().equals(ownerNickname) ? chatRepository.delete(chat):
+                         Mono.error(new AuthenticationException("Chat can delete only owner")));
     }
 
     @Override
     public Flux<Chat> getLastChats(int page, int size) {
-        return chatRepository.findAllByIdExists(true,PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "creationTime")));
+        return chatRepository
+                .findAllByIdExists(true,
+                        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "creationTime")))
+                .filter(this::checkChatLifeTime);
     }
 
     @Override
     public Flux<Chat> getChatsByGames(int page, int size , List<String> gameIds) {
         return chatRepository.findAllByGameIdsIsContaining(gameIds,
-                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "creationTime")));
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "creationTime")))
+                .filter(this::checkChatLifeTime);
     }
 
     @Override

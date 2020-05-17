@@ -8,10 +8,10 @@ import java.util.List;
 
 
 public interface IChatService {
-    public Flux<Chat> getUserChatsByNickname(String nickname);
-    public Mono<Chat> createChat(Chat chat);
-    public Mono<Void> deleteChat(String chatId, String ownerNickname);
-    public Flux<Chat> getLastChats(int page, int size);
-    public Flux<Chat> getChatsByGames(int page, int size , List<String> gameIds);
-    public Flux<Chat> getAllChats();
+    Flux<Chat> getUserChatsByNickname(String nickname);
+    Mono<Chat> createChat(Chat chat);
+    Mono<Void> deleteChat(String chatId, String ownerNickname);
+    Flux<Chat> getLastChats(int page, int size);
+    Flux<Chat> getChatsByGames(int page, int size, List<String> gameIds);
+    Flux<Chat> getAllChats();
 }

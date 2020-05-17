@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 public interface ChatRepository extends ReactiveMongoRepository<Chat, String> {
-    public Flux<Chat> findAllByIdIn(List<String> chatIds);
-    public Flux<Chat> findAllByIdExists(boolean exists,Pageable pageable);
-    public Flux<Chat>  findAllByGameIdsIsContaining(List<String> gameIds, Pageable pageable);
+    Flux<Chat> findAllByIdIn(List<String> chatIds);
+    Flux<Chat> findAllByIdExists(boolean exists, Pageable pageable);
+    Flux<Chat>  findAllByGameIdsIsContaining(List<String> gameIds, Pageable pageable);
 }

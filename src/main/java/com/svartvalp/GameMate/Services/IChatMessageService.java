@@ -5,8 +5,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface IChatMessageService {
-    public Flux<ChatMessage> findAllMessagesByChatId(String chatId);
-    public Flux<ChatMessage> findLastMessagesByChatId(String chatId, int limit, int offset);
-    public Mono<ChatMessage> createMessage(ChatMessage message);
-    public void deleteMessage(ChatMessage message);
+    Flux<ChatMessage> findAllMessagesByChatId(String chatId);
+    Flux<ChatMessage> findLastMessagesByChatId(String chatId, int limit, int offset);
+    Mono<ChatMessage> createMessage(ChatMessage message);
+    void deleteMessage(ChatMessage message);
 }

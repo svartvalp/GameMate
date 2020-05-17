@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 public class UserValidator implements Validator<User> {
-    private StringFieldChecker baseStringFieldChecker;
+    private final StringFieldChecker baseStringFieldChecker;
 
     @Autowired
     public UserValidator(StringFieldChecker baseStringFieldChecker) {

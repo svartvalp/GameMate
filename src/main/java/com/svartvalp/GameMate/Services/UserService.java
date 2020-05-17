@@ -1,5 +1,6 @@
 package com.svartvalp.GameMate.Services;
 
+import com.svartvalp.GameMate.Exceptions.AuthenticationException;
 import com.svartvalp.GameMate.Models.Chat;
 import com.svartvalp.GameMate.Models.User;
 import com.svartvalp.GameMate.Repositories.ChatRepository;
@@ -9,25 +10,44 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import javax.naming.AuthenticationException;
+
 
 @Service
 public class UserService implements IUserService {
-    UserRepository userRepository;
-    PasswordEncoder encoder;
-    ChatRepository chatRepository;
+    private UserRepository userRepository;
+    private PasswordEncoder encoder;
+    private ChatRepository chatRepository;
 
-    @Autowired
+    public UserService() {
+    }
+
     public UserService(UserRepository userRepository, PasswordEncoder encoder, ChatRepository chatRepository) {
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.chatRepository = chatRepository;
     }
 
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setEncoder(PasswordEncoder encoder) {
+        this.encoder = encoder;
+    }
+
+    @Autowired
+    public void setChatRepository(ChatRepository chatRepository) {
+        this.chatRepository = chatRepository;
+    }
+
     @Override
-    public Mono<Boolean> verifyUser(User user) {
+    public Mono<User> verifyUser(User user) {
        return userRepository.findByEmail(user.getEmail())
-                .map(foundUser -> encoder.matches(user.getPassword(), foundUser.getPassword()));
+                .flatMap(foundUser ->
+                        encoder.matches(user.getPassword(), foundUser.getPassword()) ?
+                                Mono.just(user) : Mono.error(new AuthenticationException()));
     }
 
     @Override
@@ -60,7 +80,7 @@ public class UserService implements IUserService {
 
     @Override
     public Mono<Void> deleteUser(User user) {
-       return userRepository.delete(user).then();
+       return userRepository.delete(user);
     }
 
     @Override
@@ -75,7 +95,7 @@ public class UserService implements IUserService {
 
     @Override
     public Mono<User> addChatToUser(String nickname, String chatId) {
-        return chatRepository.findById(chatId).map(chat -> addChatToUser(nickname,chat).block());
+        return chatRepository.findById(chatId).flatMap(chat -> addChatToUser(nickname,chat));
     }
 
 }
