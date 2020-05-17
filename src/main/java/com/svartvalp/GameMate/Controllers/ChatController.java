@@ -1,7 +1,9 @@
 package com.svartvalp.GameMate.Controllers;
 
 import com.svartvalp.GameMate.Models.Chat;
+import com.svartvalp.GameMate.Models.User;
 import com.svartvalp.GameMate.Services.IChatService;
+import com.svartvalp.GameMate.Services.IUserService;
 import com.svartvalp.GameMate.Validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,11 +22,13 @@ public class ChatController {
 
     final Validator<Chat> chatValidator;
     final IChatService chatService;
+    final IUserService userService;
 
     @Autowired
-    public ChatController(Validator<Chat> chatValidator, IChatService chatService) {
+    public ChatController(Validator<Chat> chatValidator, IChatService chatService, IUserService userService) {
         this.chatValidator = chatValidator;
         this.chatService = chatService;
+        this.userService = userService;
     }
 
     @GetMapping("/games")
@@ -55,4 +59,10 @@ public class ChatController {
     public Flux<Chat> getAllChats() {
         return chatService.getAllChats();
     }
+
+    @PutMapping(value = "/{chatId}/subscribe")
+    public Mono<User> subscribeToChat(@PathVariable("chatId") String chatId, Principal principal) {
+        return userService.addChatToUser(principal.getName(), chatId);
+    }
+
 }

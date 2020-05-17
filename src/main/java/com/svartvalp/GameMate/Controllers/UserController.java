@@ -1,13 +1,16 @@
 package com.svartvalp.GameMate.Controllers;
 
 import com.svartvalp.GameMate.JWT.JWTUtils;
+import com.svartvalp.GameMate.Models.Chat;
 import com.svartvalp.GameMate.Models.UpdatePasswordMessage;
 import com.svartvalp.GameMate.Models.User;
+import com.svartvalp.GameMate.Services.IChatService;
 import com.svartvalp.GameMate.Services.IUserService;
 import com.svartvalp.GameMate.Validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -21,6 +24,7 @@ import java.util.Map;
 public class UserController {
 
     IUserService userService;
+    IChatService chatService;
     Validator<User> userValidator;
     JWTUtils jwtUtils;
 
@@ -37,6 +41,11 @@ public class UserController {
     @Autowired
     public void setJwtUtils(JWTUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
+    }
+
+    @Autowired
+    public void setChatService(IChatService chatService) {
+        this.chatService = chatService;
     }
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -75,6 +84,11 @@ public class UserController {
     @GetMapping(value = "/{nickname}")
     public Mono<User> find(@PathVariable("nickname") String nickname) {
         return userService.findUserByNickName(nickname);
+    }
+
+    @GetMapping(value = "/chats")
+    public Flux<Chat> getUserChats(Principal principal) {
+        return chatService.getUserChatsByNickname(principal.getName());
     }
 
 
