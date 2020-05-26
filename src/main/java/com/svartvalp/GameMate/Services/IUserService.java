@@ -11,6 +11,7 @@ public interface IUserService {
     Mono<User> createUser(User user);
     Mono<User> updatePassword(String email, String oldPassword, String newPassword);
     Mono<Void> deleteUser(User user);
-    Mono<User> addChatToUser(String nickname, Chat chat);
-    Mono<User> addChatToUser(String nickname, String chatId);
+    Mono<User> addChatToUser(String nickname, Chat chat,  String ownerNickname);
+    Mono<User> addChatToUser(String nickname, String chatId, String ownerNickname);
+    Mono<Chat> subscribeToChat(String username, String chatId);
 }

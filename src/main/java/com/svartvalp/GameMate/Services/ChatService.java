@@ -2,6 +2,7 @@ package com.svartvalp.GameMate.Services;
 
 import com.svartvalp.GameMate.Exceptions.AuthenticationException;
 import com.svartvalp.GameMate.Models.Chat;
+import com.svartvalp.GameMate.Repositories.ChatMessageRepository;
 import com.svartvalp.GameMate.Repositories.ChatRepository;
 import com.svartvalp.GameMate.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,24 @@ public class ChatService implements IChatService{
 
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Scheduled(fixedRateString = "${scheduling.fixedRate.in.milliseconds}")
     public void doScheduled() {
-        chatRepository.deleteAll(chatRepository.findAll().filter(chat -> !checkChatLifeTime(chat))
-                .toIterable()).block();
+        Iterable<Chat> chats = chatRepository.findAll().filter(chat -> !checkChatLifeTime(chat))
+                .toIterable();
+        chatRepository.deleteAll(chats).block();
+        for(Chat chat : chats) {
+            chatMessageRepository.deleteAll(chatMessageRepository.findAllByChatId(chat.getId()).toIterable()).block();
+        }
     }
 
 
     @Autowired
-    public ChatService(ChatRepository chatRepository, UserRepository userRepository) {
+    public ChatService(ChatRepository chatRepository, UserRepository userRepository, ChatMessageRepository chatMessageRepository) {
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
+        this.chatMessageRepository = chatMessageRepository;
     }
 
     @Override
@@ -75,7 +82,12 @@ public class ChatService implements IChatService{
         return chatRepository.findAll();
     }
 
-    private boolean checkChatLifeTime(Chat chat) {
+    @Override
+    public Mono<Chat> getChatById(String id) {
+        return chatRepository.findById(id);
+    }
+
+    public boolean checkChatLifeTime(Chat chat) {
         return chat.getCreationTime() + chat.getTimeToLive() > Instant.now().toEpochMilli();
     }
 

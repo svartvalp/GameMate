@@ -1,5 +1,6 @@
 package com.svartvalp.GameMate.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,6 +25,8 @@ public class Chat {
 
     private List<String> gameIds;
 
+    private List<String> userRequests;
+
     public Chat(String description, String title, String ownerNickname, long timeToLive, long creationTime) {
         this.description = description;
         this.title = title;
@@ -31,18 +34,29 @@ public class Chat {
         this.timeToLive = timeToLive;
         this.creationTime = creationTime;
         this.gameIds = new LinkedList<>();
+        this.setUserRequests(new LinkedList<>());
     }
 
-    public Chat(String description, String title, String ownerNickname, long timeToLive, long creationTime, List<String> gameIds) {
+    public Chat(String description, String title, String ownerNickname, long timeToLive, long creationTime, List<String> gameIds, List<String> userRequests) {
         this.description = description;
         this.title = title;
         this.ownerNickname = ownerNickname;
         this.timeToLive = timeToLive;
         this.creationTime = creationTime;
         this.gameIds = gameIds;
+        this.userRequests = userRequests;
     }
 
     public Chat() {
+    }
+
+    @JsonIgnore
+    public List<String> getUserRequests() {
+        return userRequests;
+    }
+
+    public void setUserRequests(List<String> userRequests) {
+        this.userRequests = userRequests;
     }
 
     public List<String> getGameIds() {

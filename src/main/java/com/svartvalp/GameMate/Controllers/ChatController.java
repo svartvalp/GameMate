@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+
 @RequestMapping(value = "/chat")
 @RestController
 public class ChatController {
@@ -61,8 +62,8 @@ public class ChatController {
     }
 
     @PutMapping(value = "/{chatId}/subscribe")
-    public Mono<User> subscribeToChat(@PathVariable("chatId") String chatId, Principal principal) {
-        return userService.addChatToUser(principal.getName(), chatId);
+    public Mono<Chat> subscribeToChat(@PathVariable("chatId") String chatId, Principal principal) {
+        return userService.subscribeToChat(principal.getName(), chatId);
     }
 
 }

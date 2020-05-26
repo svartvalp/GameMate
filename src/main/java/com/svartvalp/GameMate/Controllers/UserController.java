@@ -1,9 +1,12 @@
 package com.svartvalp.GameMate.Controllers;
 
+import com.svartvalp.GameMate.Exceptions.AuthenticationException;
 import com.svartvalp.GameMate.JWT.JWTUtils;
 import com.svartvalp.GameMate.Models.Chat;
+import com.svartvalp.GameMate.Models.ChatWIthPublicKeyMessage;
 import com.svartvalp.GameMate.Models.UpdatePasswordMessage;
 import com.svartvalp.GameMate.Models.User;
+import com.svartvalp.GameMate.Security.PublicKeyUtils;
 import com.svartvalp.GameMate.Services.IChatService;
 import com.svartvalp.GameMate.Services.IUserService;
 import com.svartvalp.GameMate.Validation.Validator;
@@ -27,6 +30,12 @@ public class UserController {
     IChatService chatService;
     Validator<User> userValidator;
     JWTUtils jwtUtils;
+    PublicKeyUtils publicKeyUtils;
+
+    @Autowired
+    public void setPublicKeyUtils(PublicKeyUtils publicKeyUtils) {
+        this.publicKeyUtils = publicKeyUtils;
+    }
 
     @Autowired
     public void setUserService(IUserService userService) {
@@ -87,9 +96,27 @@ public class UserController {
     }
 
     @GetMapping(value = "/chats")
-    public Flux<Chat> getUserChats(Principal principal) {
-        return chatService.getUserChatsByNickname(principal.getName());
+    public Flux<ChatWIthPublicKeyMessage> getUserChats(Principal principal) {
+        return chatService.getUserChatsByNickname(principal.getName()).map(chat ->
+                new ChatWIthPublicKeyMessage(chat,
+                        publicKeyUtils.createPublicKey(chat.getId() + "." + principal.getName())));
     }
 
+    @PutMapping(value = "/chats/{chatId}/accept", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<User> acceptUserSubscribing(Principal principal,
+                                            @PathVariable("chatId") String chatId,
+                                            @RequestBody User user) {
+        userValidator.validate(user, List.of("nickname"));
+        return userService.addChatToUser(user.getNickname(), chatId, principal.getName());
+    }
 
+    @GetMapping(value = "/chats/{chatId}")
+    public Mono<List<String>> getUsersRequests(Principal principal, @PathVariable("chatId") String chatId) {
+        return chatService.getChatById(chatId).flatMap(chat -> {
+            if(chat.getOwnerNickname().equals(principal.getName())) {
+                return Mono.just(chat.getUserRequests());
+            }
+            return Mono.error(new AuthenticationException("you have so permissions"));
+        });
+    }
 }

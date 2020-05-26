@@ -62,9 +62,8 @@ public class UserService implements IUserService {
 
     @Override
     public Mono<User> createUser(User user) {
-        System.out.println(user.getEmail() + user.getPassword() + user.getNickname());
         user.setPassword(encoder.encode(user.getPassword()));
-        return userRepository.insert(user);
+        return userRepository.insert(user).onErrorMap((e) -> new AuthenticationException());
     }
 
     @Override
@@ -90,18 +89,27 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Mono<User> addChatToUser(String nickname, Chat chat) {
+    public Mono<User> addChatToUser(String nickname, Chat chat, String ownerNickname) {
         return userRepository.findByNickname(nickname)
-                .map(user -> {
-                    user.getChatIds().add(chat.getId());
-                    userRepository.save(user);
-                    return user;
+                .flatMap(user -> {
+                    if(chat.getOwnerNickname().equals(ownerNickname)) {
+                        chat.getUserRequests().remove(user.getNickname());
+                        user.getChatIds().add(chat.getId());
+                        userRepository.save(user);
+                        return Mono.just(user);
+                    }
+                    return Mono.error(new AuthenticationException("you have permissions to do that"));
                 });
     }
 
     @Override
-    public Mono<User> addChatToUser(String nickname, String chatId) {
-        return chatRepository.findById(chatId).flatMap(chat -> addChatToUser(nickname,chat));
+    public Mono<User> addChatToUser(String nickname, String chatId, String ownerNickname) {
+        return chatRepository.findById(chatId).flatMap(chat -> addChatToUser(nickname,chat, ownerNickname));
+    }
+
+    @Override
+    public Mono<Chat> subscribeToChat(String username, String chatId) {
+        return chatRepository.findById(chatId).map(chat -> {chat.getUserRequests().add(username); return chat;});
     }
 
 }

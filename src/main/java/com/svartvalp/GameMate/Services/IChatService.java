@@ -14,4 +14,5 @@ public interface IChatService {
     Flux<Chat> getLastChats(int page, int size);
     Flux<Chat> getChatsByGames(int page, int size, List<String> gameIds);
     Flux<Chat> getAllChats();
+    Mono<Chat> getChatById(String id);
 }
